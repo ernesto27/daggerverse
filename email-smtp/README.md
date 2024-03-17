@@ -38,7 +38,7 @@ import (
 
 type Example struct{}
 
-func (m *Demo) Example(ctx context.Context, token *Secret) error {
+func (m *Demo) Example(ctx context.Context, token *Secret) (string, error) {
 	from := "from@gmail.com"
 	to := "to@gmail.com"
 	subject := "Test Email"
