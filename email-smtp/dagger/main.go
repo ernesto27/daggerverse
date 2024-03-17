@@ -13,7 +13,7 @@ type EmailSmtp struct{}
 
 // Example usage:
 //
-//	dagger call send-email  \
+//	dagger -m github.com/ernesto27/daggerverse/email-smtp call send  \
 //		--from="from@gmail.com" \
 //		--to="someemail@gmail.com" \
 //		--subject="Hello" \
