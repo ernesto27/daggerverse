@@ -9,20 +9,21 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-type SendEmail struct{}
+type EmailSmtp struct{}
 
 // Example usage:
 //
 //	dagger call send-email  \
 //		--from="from@gmail.com" \
-//		--to="someemail@gmail.com,otheremail@gmail.com" \
+//		--to="someemail@gmail.com" \
 //		--subject="Hello" \
 //		--body="Hello, World!" \
 //		--host="smtp.mailtrap.io" \
 //		--port=587  \
 //		--username env:SMTP_USERNAME \
 //		--password env:SMPT_PASSWORD
-func (m *SendEmail) SendEmail(
+func (m *EmailSmtp) Send(
+	ctx context.Context,
 	// From email address
 	from string,
 	// To email address
@@ -42,8 +43,6 @@ func (m *SendEmail) SendEmail(
 	// SMTP password
 	password *Secret,
 ) (string, error) {
-
-	ctx := context.TODO()
 	emails := strings.Split(to, ",")
 
 	mail := gomail.NewMessage()

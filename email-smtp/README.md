@@ -1,4 +1,4 @@
-# Dagger Send email Module
+# Dagger email smtp Module
 
 
 ### CLI example
@@ -9,8 +9,8 @@ Send email using SMTP server
 export SMTP_USERNAME=<your-smtp-username>
 export SMPT_PASSWORD=<your-smtp-password>
 
-dagger -m github.com/ernesto27/daggerverse/send-email \
-call send-email \
+dagger -m github.com/ernesto27/daggerverse/email-smtp \
+call send \
 --from="from@gmail.com" \
 --to="mail@gmail.com" \
 --subject="Hello" \
