@@ -15,7 +15,7 @@ func AlpineReq() *Container {
 // Make a request to a graphql endpoint and returns a json response
 //
 // Example usage: dagger call graphql-request --url "https://countries.trevorblades.com/" --message="query {countries {name}}" stdout
-func (graphql *GraphqlClient) GraphqlRequest(
+func (graphql *GraphqlClient) Request(
 	// The url of the graphql server
 	url string,
 	// The graphql query definition
