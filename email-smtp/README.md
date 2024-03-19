@@ -17,7 +17,9 @@ call send \
 --body="Hello, World!" \
 --host="smtp.mailtrap.io" \
 --username env:SMTP_USERNAME \ 
---password env:SMTP_PASSWORD 
+--password env:SMTP_PASSWORD \
+--attachment="path/to/attachment" \
+--embed="path/to/embed"
 ```
 
 

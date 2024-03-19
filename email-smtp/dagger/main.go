@@ -22,6 +22,8 @@ type EmailSmtp struct{}
 //		--port=587  \
 //		--username env:SMTP_USERNAME \
 //		--password env:SMPT_PASSWORD
+//		--attachment="path/to/attachment" \
+//		--embed="path/to/embed"
 func (m *EmailSmtp) Send(
 	ctx context.Context,
 	// From email address
@@ -42,6 +44,10 @@ func (m *EmailSmtp) Send(
 	username *Secret,
 	// SMTP password
 	password *Secret,
+	// +optional
+	attachment *File,
+	// +optional
+	embed *File,
 ) (string, error) {
 	emails := strings.Split(to, ",")
 
@@ -49,6 +55,24 @@ func (m *EmailSmtp) Send(
 	mail.SetHeader("From", from)
 	mail.SetHeader("To", emails...)
 	mail.SetHeader("Subject", subject)
+
+	if attachment != nil {
+		attachName, err := attachment.Name(ctx)
+		if err != nil {
+			return "", err
+		}
+		attachment.Export(ctx, attachName)
+		mail.Attach(attachName)
+	}
+
+	if embed != nil {
+		embedName, err := embed.Name(ctx)
+		if err != nil {
+			return "", err
+		}
+		embed.Export(ctx, embedName)
+		mail.Embed(embedName)
+	}
 
 	usernamePlainText, err := username.Plaintext(ctx)
 	if err != nil {
