@@ -12,10 +12,10 @@ type AwsCli struct{}
 // Example usage
 //
 // dagger call -m github.com/ernesto27/daggerverse/aws-cli run
-//     --command="s3 ls"  \
-//     --dir-config ~/.aws/
-
-func (m *AwsCli) Run(
+//
+//	--command="s3 ls"  \
+//	--dir-config ~/.aws/
+func (a *AwsCli) Run(
 	// AWS CLI command to execute
 	command string,
 	// AWS config credentials directory
@@ -33,9 +33,7 @@ func (m *AwsCli) Run(
 		}
 	}
 
-	container := dag.Container().
-		From("amazon/aws-cli:latest").
-		WithMountedDirectory("/root/.aws/", dirConfig)
+	container := a.baseContainer(dirConfig)
 
 	if dirFiles != nil {
 		container = container.WithMountedDirectory("/aws/", dirFiles)
@@ -49,14 +47,13 @@ func (m *AwsCli) Run(
 
 // Example usage
 //
-// dagger call push-to-ecr \
+// dagger call -m github.com/ernesto27/daggerverse/aws-cli push-to-ecr \
 // --dir-config ~/.aws \
 // --dir-source . \
 // --region="us-west-2" \
 // --registry="registry-url" \
 // --uri="uri"
-
-func (m *AwsCli) PushToECR(
+func (a *AwsCli) PublishToEcr(
 	ctx context.Context,
 	// AWS config credentials directory
 	dirConfig *Directory,
@@ -69,9 +66,7 @@ func (m *AwsCli) PushToECR(
 	// ECR image URI
 	uri string,
 ) (string, error) {
-	token, err := dag.Container().
-		From("amazon/aws-cli:latest").
-		WithMountedDirectory("/root/.aws/", dirConfig).
+	token, err := a.baseContainer(dirConfig).
 		WithExec([]string{"ecr", "get-login-password", "--region", region}).
 		Stdout(ctx)
 	if err != nil {
@@ -83,4 +78,42 @@ func (m *AwsCli) PushToECR(
 		WithRegistryAuth(registry, "AWS", secret).
 		Publish(ctx, uri)
 
+}
+
+// Example usage
+// dagger call -m github.com/ernesto27/daggerverse/aws-cli update-ecs-service \
+// --dir-config ~/.aws \
+// --region="us-west-2" \
+// --task-definition ./task-definition.json \
+// --cluster="your-cluster" \
+// --service="your-service" \
+// --task-definition-name="your-td"
+func (a *AwsCli) UpdateEcsService(
+	ctx context.Context,
+	dirConfig *Directory,
+	region string,
+	taskDefinition *File,
+	cluster string,
+	service string,
+	taskDefinitionName string,
+) (string, error) {
+	_, err := a.baseContainer(dirConfig).
+		WithMountedFile("task-definition.json", taskDefinition).
+		WithExec([]string{"ecs", "register-task-definition", "--region", region, "--cli-input-json", "file://task-definition.json"}).
+		Stdout(ctx)
+
+	if err != nil {
+		return "", err
+	}
+
+	return a.baseContainer(dirConfig).
+		WithExec([]string{"ecs", "update-service", "--region", region, "--cluster", cluster, "--service", service, "--task-definition", taskDefinitionName}).
+		Stdout(ctx)
+
+}
+
+func (a AwsCli) baseContainer(dirConfig *Directory) *Container {
+	return dag.Container().
+		From("amazon/aws-cli:latest").
+		WithMountedDirectory("/root/.aws/", dirConfig)
 }
