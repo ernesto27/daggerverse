@@ -52,8 +52,6 @@ import (
 type Example struct{}
 
 func (m *Demo) Example(ctx context.Context, command string, dirConfig *Directory) (string, error) {
-	return dag.
-			AwsCli().
-			Run(ctx, command, dirConfig)
+	return dag.AwsCli().Run(ctx, command, dirConfig)
 }
 ```
