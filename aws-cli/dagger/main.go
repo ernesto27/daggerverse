@@ -45,10 +45,10 @@ func (a *AwsCli) Run(
 	return resp, err
 }
 
-// Log in to AWS, build a Docker image and push it to ECR
+// Log in to AWS, build a Docker image and publish it to ECR
 // Example usage
 //
-// dagger call -m github.com/ernesto27/daggerverse/aws-cli push-to-ecr \
+// dagger call -m github.com/ernesto27/daggerverse/aws-cli publish-to-ecr \
 // --dir-config ~/.aws \
 // --dir-source . \
 // --region="us-west-2" \
