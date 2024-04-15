@@ -9,12 +9,11 @@ import (
 
 type AwsCli struct{}
 
+// Executes an AWS CLI command
 // Example usage
-//
-// dagger call -m github.com/ernesto27/daggerverse/aws-cli run
-//
-//	--command="s3 ls"  \
-//	--dir-config ~/.aws/
+// dagger call -m github.com/ernesto27/daggerverse/aws-cli run \
+// --command="s3 ls"  \
+// --dir-config ~/.aws/
 func (a *AwsCli) Run(
 	// AWS CLI command to execute
 	command string,
@@ -45,8 +44,8 @@ func (a *AwsCli) Run(
 	return resp, err
 }
 
+// Log in to AWS, build a Docker image and push it to ECR
 // Example usage
-//
 // dagger call -m github.com/ernesto27/daggerverse/aws-cli push-to-ecr \
 // --dir-config ~/.aws \
 // --dir-source . \
@@ -80,6 +79,7 @@ func (a *AwsCli) PublishToEcr(
 
 }
 
+// Update an ECS service with a new task definition
 // Example usage
 // dagger call -m github.com/ernesto27/daggerverse/aws-cli update-ecs-service \
 // --dir-config ~/.aws \
