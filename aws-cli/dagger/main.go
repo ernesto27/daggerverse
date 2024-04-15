@@ -1,4 +1,4 @@
-// This module executes AWS CLI commands
+// This module provides a set of functions to interact with AWS CLI
 
 package main
 
