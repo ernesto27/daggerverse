@@ -44,8 +44,10 @@ func (m *EmailSmtp) Send(
 	username *Secret,
 	// SMTP password
 	password *Secret,
+	// Attachment file path
 	// +optional
 	attachment *File,
+	// Embed file path
 	// +optional
 	embed *File,
 ) (string, error) {
