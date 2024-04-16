@@ -20,16 +20,34 @@ import (
 
 type Charm struct{}
 
-func (m *Charm) VHS(ctx context.Context, fileTape *File, publish bool) (*File, string) {
-	base := dag.Container().
-		From("ghcr.io/charmbracelet/vhs").
+func (c *Charm) Vhs(ctx context.Context, fileTape *File) *File {
+	return c.baseVhs(fileTape).
 		WithMountedFile("demo.tape", fileTape).
-		WithExec([]string{"demo.tape", "-o", "output.gif"})
+		WithExec([]string{"demo.tape", "-o", "output.gif"}).
+		File("output.gif")
+}
 
-	// if publish {
-	// 	url, _ = base.WithExec([]string{"publish", "output.gif"}).Stdout(ctx)
-	// }
+func (c *Charm) VhsPublish(ctx context.Context, file *File) (string, error) {
+	return c.baseVhs(file).
+		WithMountedFile("demo.gif", file).
+		WithExec([]string{"publish", "demo.gif"}).
+		Stdout(ctx)
+}
 
-	return base.File("output.gif"), ""
+func (c *Charm) baseVhs(file *File) *Container {
+	return dag.Container().
+		From("ghcr.io/charmbracelet/vhs")
+}
 
+func (c *Charm) Freeze(ctx context.Context) (string, error) {
+	return dag.Container().
+		From("alpine:latest").
+		WithExec([]string{"apk", "update"}).
+		WithExec([]string{"apk", "add", "wget"}).
+		WithExec([]string{"wget", "https://github.com/charmbracelet/freeze/releases/download/v0.1.6/freeze_0.1.6_Linux_x86_64.tar.gz"}).
+		WithExec([]string{"mkdir", "freeze"}).
+		// WithExec([]string{"tar", "-xvf", "freeze_0.1.6_Linux_x86_64.tar.gz", "--directory", "freeze"}).
+		WithExec([]string{"tar", "-xvf", "freeze_0.1.6_Linux_x86_64.tar.gz"}).
+		WithExec([]string{"freeze_0.1.6_Linux_x86_64/freeze"}).
+		Stdout(ctx)
 }
